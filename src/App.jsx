@@ -56,7 +56,7 @@ const App = () => {
               <Route path="/invite" element={
                 profileFemmeId && challengeId ?
                   <InviteFormProfile femmeId={profileFemmeId} challengeId={challengeId} />
-                  : <p>Choisissez un profil pour inviter.</p>
+                  : <p>Invitez des profils à vous rencontrer.</p>
               }/>
               <Route path="/invites" element={<InvitesList />} />
               <Route path="*" element={<Navigate to="/profile" />} />
