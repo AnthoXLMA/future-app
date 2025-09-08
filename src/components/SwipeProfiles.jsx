@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { auth, db } from "../firebase";
-import { collection, getDocs, query, where, doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc, setDoc } from "firebase/firestore";
 
 const SwipeProfiles = () => {
   const [profiles, setProfiles] = useState([]);
@@ -15,48 +15,54 @@ const SwipeProfiles = () => {
   const swipeRef = useRef(null);
 
   useEffect(() => {
-    if (!user) return;
+  if (!user) return;
 
-    const fetchProfiles = async () => {
-      try {
-        const userSnap = await getDocs(collection(db, "Profiles"));
-        const userProfile = userSnap.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .find(p => p.id === user.uid);
+  const fetchProfiles = async () => {
+    try {
+      // 🔎 Récupérer le profil de l’utilisateur courant par userId
+      const qUser = query(collection(db, "Profiles"), where("userId", "==", user.uid));
+      const userSnap = await getDocs(qUser);
 
-        if (!userProfile) {
-          console.error("Profil utilisateur introuvable");
-          setLoading(false);
-          return;
-        }
-
-        setCurrentUserGender(userProfile.gender);
-        const targetGender = userProfile.gender === "homme" ? "femme" : "homme";
-
-        const q = query(collection(db, "Profiles"), where("gender", "==", targetGender));
-        const snapshot = await getDocs(q);
-        const filteredProfiles = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .filter(profile => profile.id !== user.uid);
-
-        setProfiles(filteredProfiles);
-      } catch (err) {
-        console.error(err);
-      } finally {
+      if (userSnap.empty) {
+        console.error("Profil utilisateur introuvable. Complétez d'abord votre profil !");
         setLoading(false);
+        return;
       }
-    };
 
-    fetchProfiles();
-  }, [user]);
+      const userProfile = userSnap.docs[0].data();
+      setCurrentUserGender(userProfile.gender);
+
+      // 🔄 Déterminer le genre recherché
+      const targetGender = userProfile.gender === "homme" ? "femme" : "homme";
+
+      // 🎯 Charger uniquement les profils du genre opposé
+      const q = query(collection(db, "Profiles"), where("gender", "==", targetGender));
+      const snapshot = await getDocs(q);
+
+      const filteredProfiles = snapshot.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(profile => profile.userId !== user.uid); // exclure soi-même
+
+      setProfiles(filteredProfiles);
+    } catch (err) {
+      console.error("Erreur chargement profils:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfiles();
+}, [user]);
+
 
   const handleAction = async (actionType, profile) => {
     if (!profile || !user) return;
 
     try {
-      const inviteRef = doc(db, "Invites", profile.id);
+      const inviteRef = doc(db, "Invites", `${user.uid}_${profile.id}`);
       const payload = {
         fromUserId: user.uid,
+        toUserId: profile.id,
         action: actionType,
         date: new Date(),
       };
@@ -82,10 +88,8 @@ const SwipeProfiles = () => {
     setDragStart(null);
   };
 
-  if (loading || !currentUserGender)
-    return <p className="text-center mt-20 text-lg font-medium">Chargement des profils...</p>;
-  if (!profiles.length)
-    return <p className="text-center mt-20 text-lg font-medium">Aucun profil disponible.</p>;
+  if (loading) return <p className="text-center mt-20 text-lg font-medium">Chargement des profils...</p>;
+  if (!profiles.length) return <p className="text-center mt-20 text-lg font-medium">Aucun profil disponible.</p>;
 
   // HOMME → Carousel
   if (currentUserGender === "homme") {
@@ -111,8 +115,8 @@ const SwipeProfiles = () => {
               <h3 className="text-lg font-semibold">{profile.nom}, {profile.age}</h3>
               <p className="text-sm text-gray-600">{profile.ville}</p>
               <p className="text-sm">Lifestyle: {profile.lifestyle}</p>
-              <p className="text-sm">Valeurs: {profile.valeurs.join(", ")}</p>
-              <p className="text-sm">Ambitions: {profile.ambitions.join(", ")}</p>
+              <p className="text-sm">Valeurs: {profile.valeurs?.join(", ") || "—"}</p>
+              <p className="text-sm">Ambitions: {profile.ambitions?.join(", ") || "—"}</p>
             </div>
 
             <div className="flex justify-around w-full mt-4 space-x-2">
@@ -161,8 +165,8 @@ const SwipeProfiles = () => {
           <h3 className="text-lg font-semibold">{profile.nom}, {profile.age}</h3>
           <p className="text-sm text-gray-600">{profile.ville}</p>
           <p className="text-sm">Lifestyle: {profile.lifestyle}</p>
-          <p className="text-sm">Valeurs: {profile.valeurs.join(", ")}</p>
-          <p className="text-sm">Ambitions: {profile.ambitions.join(", ")}</p>
+          <p className="text-sm">Valeurs: {profile.valeurs?.join(", ") || "—"}</p>
+          <p className="text-sm">Ambitions: {profile.ambitions?.join(", ") || "—"}</p>
 
           <div className="flex justify-around w-full mt-4 space-x-2">
             <button

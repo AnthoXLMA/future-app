@@ -11,14 +11,20 @@ const GenderModal = ({ isOpen, onClose, onSubmit }) => {
     if (!user || !selectedGender) return;
 
     try {
-      await setDoc(doc(db, "Users", user.uid), {
-        userId: user.uid,
-        email: user.email,
-        gender: selectedGender,
-        createdAt: new Date(),
-      }, { merge: true });
+      await setDoc(
+        doc(db, "Users", user.uid),
+        {
+          userId: user.uid,
+          email: user.email,
+          gender: selectedGender,
+          createdAt: new Date(),
+        },
+        { merge: true }
+      );
+
+      // 👉 onSubmit vient de App.jsx et déclenche l’ouverture du ProfileSetup
       onSubmit(selectedGender);
-      onClose();
+      // onClose();
     } catch (err) {
       console.error("Erreur Firestore:", err);
     }
@@ -27,12 +33,17 @@ const GenderModal = ({ isOpen, onClose, onSubmit }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col items-center p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-gray-800">Quel est votre genre ?</h2>
+        <h2 className="text-2xl font-bold text-gray-800">
+          Quel est votre genre ?
+        </h2>
 
         <div className="flex gap-6">
+          {/* Choix Homme */}
           <div
             className={`flex flex-col items-center justify-center p-6 rounded-xl cursor-pointer transition-transform duration-200 ${
-              selectedGender === "homme" ? "bg-purple-700 text-white scale-105" : "bg-gray-100 text-gray-800 hover:scale-105"
+              selectedGender === "homme"
+                ? "bg-purple-700 text-white scale-105"
+                : "bg-gray-100 text-gray-800 hover:scale-105"
             }`}
             onClick={() => setSelectedGender("homme")}
           >
@@ -40,9 +51,12 @@ const GenderModal = ({ isOpen, onClose, onSubmit }) => {
             <span className="mt-2 font-semibold">Homme</span>
           </div>
 
+          {/* Choix Femme */}
           <div
             className={`flex flex-col items-center justify-center p-6 rounded-xl cursor-pointer transition-transform duration-200 ${
-              selectedGender === "femme" ? "bg-pink-500 text-white scale-105" : "bg-gray-100 text-gray-800 hover:scale-105"
+              selectedGender === "femme"
+                ? "bg-pink-500 text-white scale-105"
+                : "bg-gray-100 text-gray-800 hover:scale-105"
             }`}
             onClick={() => setSelectedGender("femme")}
           >

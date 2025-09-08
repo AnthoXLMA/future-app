@@ -155,10 +155,27 @@ const App = () => {
         </Routes>
       </main>
 
-      {/* ProfileSetup Modal */}
-      <Modal isOpen={openModal === "profile"} onClose={() => setOpenModal(null)}>
-        <ProfileSetup userGender={userGender} />
-      </Modal>
+
+      {openModal === "gender" && (
+        <GenderModal
+          isOpen
+          onClose={() => setOpenModal(null)}
+          onSubmit={(gender) => {
+            setUserGender(gender);
+            setOpenModal("profile"); // ouvrira ProfileSetup
+          }}
+        />
+      )}
+
+      {openModal === "profile" && (
+        <ProfileSetup
+          isOpen={true}
+          onClose={() => setOpenModal(null)}
+          userGender={userGender}
+        />
+      )}
+
+
 
       {/* Settings Modal */}
       <SettingsModal
@@ -167,18 +184,6 @@ const App = () => {
         userData={{ username: user?.displayName, email: user?.email }}
         onSave={(updatedData) => console.log("Profil mis à jour :", updatedData)}
       />
-
-      {/* Gender Modal */}
-      {openModal === "gender" && (
-        <GenderModal
-          isOpen
-          onClose={() => setOpenModal(null)}
-          onSubmit={(gender) => {
-            setUserGender(gender); // "homme" ou "femme"
-            setOpenModal("profile");
-          }}
-        />
-      )}
 
       {/* Bottom Navigation */}
       {user && (userGender === "homme" || userGender === "femme") && (
