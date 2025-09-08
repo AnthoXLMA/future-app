@@ -1,5 +1,5 @@
 /* ==============================
-   SwipeProfiles.css - version moderne
+   SwipeProfiles.css - Mobile-friendly responsive
    ============================== */
 
 /* Container principal */
@@ -7,16 +7,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 2rem;
-  perspective: 1000px; /* pour effet 3D sur swipe */
+  justify-content: center;
+  margin: 0;
+  min-height: calc(100vh - 120px); /* espace header + footer */
+  perspective: 1000px;
+  box-sizing: border-box;
+  padding: 0 1rem;
 }
 
 /* ==============================
    Carte profil
    ============================== */
 .profile-card {
-  width: 320px;
-  height: 500px; /* carte plus grande */
+  width: 90%;
+  max-width: 400px;
+  height: calc(100vh - 180px); /* 100% écran - header/footer */
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 15px 30px rgba(0,0,0,0.2);
@@ -26,11 +31,13 @@
   align-items: center;
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .profile-card img {
   width: 100%;
-  height: 65%;
+  height: 60%;
   object-fit: cover;
   border-radius: 16px;
   margin-bottom: 1rem;
@@ -52,11 +59,13 @@
 .swipe-buttons {
   display: flex;
   justify-content: space-around;
-  width: 300px;
-  margin-top: 1.5rem;
+  width: 90%;
+  max-width: 360px;
+  margin-top: auto; /* pousse les boutons en bas de la carte */
+  padding-bottom: 0.5rem;
 }
 
-/* Boutons génériques ronds */
+/* Boutons ronds modernes */
 .swipe-btn {
   width: 70px;
   height: 70px;
@@ -72,7 +81,6 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hover / effet pop */
 .swipe-btn:hover {
   transform: scale(1.15);
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -80,45 +88,65 @@
 
 /* Couleurs par action */
 .swipe-btn.pass {
-  background-color: #aaa; /* gris pour passer */
+  background-color: #aaa;
 }
 
 .swipe-btn.like {
-  background: linear-gradient(135deg, #ff5a5f, #ff8a66); /* rouge like */
+  background: linear-gradient(135deg, #ff5a5f, #ff8a66);
 }
 
 .swipe-btn.invite {
-  background-color: #4CAF50; /* vert pour invitation normale */
+  background-color: #4CAF50;
 }
 
 .swipe-btn.premium {
-  background-color: #fcb045; /* orange / doré pour invitation premium */
+  background-color: #fcb045;
 }
 
 /* ==============================
    Carousel pour les hommes
    ============================== */
 .carousel-wrapper {
+  width: 100%;
+  max-width: 420px;
+  height: calc(100vh - 180px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  margin: 1rem auto;
+  box-sizing: border-box;
+}
+
+.carousel-header {
+  width: 100%;
   text-align: center;
-  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .carousel {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow-x: auto;
+  scroll-behavior: smooth;
   width: 100%;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .carousel-card {
-  width: 270px;
-  margin: 0 1rem;
+  flex: 0 0 80%;
+  max-width: 350px;
+  height: 100%;
+  margin: 0 0.5rem;
   border-radius: 16px;
   padding: 1rem;
   background: #fff;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  transform: scale(0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
@@ -132,6 +160,7 @@
   background: none;
   border: none;
   cursor: pointer;
+  margin: 0 0.5rem;
   transition: transform 0.2s ease;
 }
 
@@ -142,6 +171,7 @@
 /* Carousel indicateurs */
 .carousel-indicators {
   margin-top: 0.5rem;
+  text-align: center;
 }
 
 .dot {
@@ -158,4 +188,28 @@
 .dot.active {
   background: #ff5a5f;
   transform: scale(1.3);
+}
+
+/* ==============================
+   Responsive tweaks
+   ============================== */
+@media (max-width: 480px) {
+  .profile-card, .carousel-card {
+    width: 95%;
+    height: calc(100vh - 140px); /* ajusté pour mobile */
+  }
+
+  .swipe-buttons {
+    width: 95%;
+  }
+
+  .swipe-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .carousel-card {
+    flex: 0 0 90%;
+  }
 }

@@ -15,9 +15,6 @@ import SwipeProfiles from "./components/SwipeProfiles.jsx";
 import Modal from "./components/Modal.jsx";
 import SettingsModal from "./components/SettingsModal.jsx";
 
-import "./visuels/BottomNav.css";
-import "./App.css";
-
 const App = () => {
   const [user, setUser] = useState(null);
   const [challengeId, setChallengeId] = useState(null);
@@ -30,7 +27,7 @@ const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((u) => {
+    const unsubscribe = auth.onAuthStateChanged(u => {
       setUser(u);
       setLoading(false);
     });
@@ -42,7 +39,7 @@ const App = () => {
     else if (userGender === "femme") navigate("/dashboard-femme");
   }, [userGender, navigate]);
 
-  if (loading) return <p className="loading">Chargement...</p>;
+  if (loading) return <p className="text-center mt-20 text-lg font-medium">Chargement...</p>;
 
   const handleSignOut = async () => {
     try {
@@ -57,34 +54,43 @@ const App = () => {
   };
 
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <div className="logo">
-          <h1>🌌 FUTURE</h1>
-        </div>
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="flex justify-between items-center bg-gradient-to-r from-purple-700 to-blue-500 text-white p-4 shadow-md">
+        <div className="text-xl font-bold">🌌 FUTURE</div>
 
         {user && (
-          <div className="profile-actions">
-            <span className="user-name" style={{ marginRight: "1rem", fontWeight: "bold" }}>
-              {user.displayName || user.email}
-            </span>
+          <div className="flex items-center space-x-4">
+            <span className="font-semibold">{user.displayName || user.email}</span>
 
-            <button onClick={() => setOpenModal("settings")} className="settings-icon" aria-label="Réglages">
+            <button
+              onClick={() => setOpenModal("settings")}
+              className="text-xl hover:text-purple-200 transition-transform transform hover:rotate-90"
+              aria-label="Réglages"
+            >
               ⚙️
             </button>
 
-            <button onClick={() => setOpenModal("profile")} className="profile-icon" aria-label="Profil" style={{ marginRight: "1rem" }}>
+            <button
+              onClick={() => setOpenModal("profile")}
+              className="text-xl hover:text-purple-200"
+              aria-label="Profil"
+            >
               👤
             </button>
 
-            <button onClick={handleSignOut} className="logout-button">
+            <button
+              onClick={handleSignOut}
+              className="bg-white bg-opacity-20 text-white px-3 py-1 rounded-md font-medium hover:bg-opacity-40 transition"
+            >
               Se déconnecter
             </button>
           </div>
         )}
       </header>
 
-      <main className="app-main">
+      {/* Main */}
+      <main className="flex-1 overflow-auto p-4">
         <Routes>
           {!user ? (
             <>
@@ -94,7 +100,7 @@ const App = () => {
                   <Auth
                     onSignUp={(newUser) => {
                       setUser(newUser);
-                      setOpenModal("gender"); // ouvre GenderModal après inscription
+                      setOpenModal("gender");
                     }}
                   />
                 }
@@ -114,7 +120,7 @@ const App = () => {
                   profileFemmeId && challengeId ? (
                     <InviteFormProfile femmeId={profileFemmeId} challengeId={challengeId} />
                   ) : (
-                    <p>Invitez des profils à vous rencontrer.</p>
+                    <p className="text-center text-gray-500 mt-10">Invitez des profils à vous rencontrer.</p>
                   )
                 }
               />
@@ -126,12 +132,12 @@ const App = () => {
         </Routes>
       </main>
 
-      {/* ProfileSetup modal */}
+      {/* ProfileSetup Modal */}
       <Modal isOpen={openModal === "profile"} onClose={() => setOpenModal(null)}>
         <ProfileSetup userGender={userGender} />
       </Modal>
 
-      {/* Settings modal */}
+      {/* Settings Modal */}
       <SettingsModal
         isOpen={openModal === "settings"}
         onClose={() => setOpenModal(null)}
@@ -139,7 +145,8 @@ const App = () => {
         onSave={(updatedData) => console.log("Profil mis à jour :", updatedData)}
       />
 
-{/*     {openModal === "gender" && (
+      {/* Gender Modal (optionnel) */}
+      {openModal === "gender" && (
         <GenderModal
           isOpen
           onClose={() => setOpenModal(null)}
@@ -148,16 +155,26 @@ const App = () => {
             setOpenModal("profile");
           }}
         />
-      )}}*/}
+      )}
 
-      {/* Bottom navigation */}
+      {/* Bottom Navigation */}
       {user && (
-        <nav className="bottom-nav">
-          <button onClick={() => navigate("/dashboard")} className="bottom-nav-button">🏠<span>Dashboard</span></button>
-          <button onClick={() => navigate("/challenge")} className="bottom-nav-button">✏️<span>Challenge</span></button>
-          <button onClick={() => navigate("/invite")} className="bottom-nav-button">💌<span>Inviter</span></button>
-          <button onClick={() => navigate("/response")} className="bottom-nav-button">📨<span>Réponses</span></button>
-          <button onClick={() => navigate("/swipe")} className="bottom-nav-button swipe">🔄<span>Swipe</span></button>
+        <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-t p-2 flex justify-around items-center rounded-t-xl">
+          <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
+            🏠<span className="text-xs">Dashboard</span>
+          </button>
+          <button onClick={() => navigate("/challenge")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
+            ✏️<span className="text-xs">Challenge</span>
+          </button>
+          <button onClick={() => navigate("/invite")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
+            💌<span className="text-xs">Inviter</span>
+          </button>
+          <button onClick={() => navigate("/response")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
+            📨<span className="text-xs">Réponses</span>
+          </button>
+          <button onClick={() => navigate("/swipe")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
+            🔄<span className="text-xs">Swipe</span>
+          </button>
         </nav>
       )}
     </div>

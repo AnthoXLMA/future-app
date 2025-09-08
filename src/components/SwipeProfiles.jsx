@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { auth, db } from "../firebase";
 import { collection, getDocs, query, where, doc, setDoc } from "firebase/firestore";
-import "../visuels/Swipe.css";
 
 const SwipeProfiles = () => {
   const [profiles, setProfiles] = useState([]);
@@ -32,12 +31,10 @@ const SwipeProfiles = () => {
         }
 
         setCurrentUserGender(userProfile.gender);
-
         const targetGender = userProfile.gender === "homme" ? "femme" : "homme";
 
         const q = query(collection(db, "Profiles"), where("gender", "==", targetGender));
         const snapshot = await getDocs(q);
-
         const filteredProfiles = snapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() }))
           .filter(profile => profile.id !== user.uid);
@@ -63,9 +60,7 @@ const SwipeProfiles = () => {
         action: actionType,
         date: new Date(),
       };
-
       if (actionType === "premium") payload.reward = 10;
-
       await setDoc(inviteRef, payload, { merge: true });
     } catch (err) {
       console.error(err);
@@ -76,9 +71,8 @@ const SwipeProfiles = () => {
     setDragOffset(0);
   };
 
-  // Gestion tactile pour swipe femmes
-  const handleTouchStart = (e) => setDragStart(e.touches[0].clientX);
-  const handleTouchMove = (e) => {
+  const handleTouchStart = e => setDragStart(e.touches[0].clientX);
+  const handleTouchMove = e => {
     if (dragStart !== null) setDragOffset(e.touches[0].clientX - dragStart);
   };
   const handleTouchEnd = () => {
@@ -88,63 +82,98 @@ const SwipeProfiles = () => {
     setDragStart(null);
   };
 
-  if (loading || !currentUserGender) return <p>Chargement des profils...</p>;
-  if (!profiles.length) return <p>Aucun profil disponible.</p>;
+  if (loading || !currentUserGender)
+    return <p className="text-center mt-20 text-lg font-medium">Chargement des profils...</p>;
+  if (!profiles.length)
+    return <p className="text-center mt-20 text-lg font-medium">Aucun profil disponible.</p>;
 
-  // HOMME → Carousel tactile
+  // HOMME → Carousel
   if (currentUserGender === "homme") {
     const profile = profiles[carouselIndex];
     return (
-      <div className="carousel-wrapper">
-        <h2>Profils féminins disponibles</h2>
-        <div className="carousel">
-          <button onClick={() => setCarouselIndex((carouselIndex - 1 + profiles.length) % profiles.length)}>⬅️</button>
-          <div className="carousel-card">
-            <img src={profile.photoCompleteUrl || "https://via.placeholder.com/300"} alt={profile.nom} />
-            <h3>{profile.nom}, {profile.age}</h3>
-            <p>{profile.ville}</p>
-            <p>Lifestyle: {profile.lifestyle}</p>
-            <p>Valeurs: {profile.valeurs.join(", ")}</p>
-            <p>Ambitions: {profile.ambitions.join(", ")}</p>
-            <div className="swipe-buttons">
-              <button className="swipe-btn pass" onClick={() => handleAction("pass")}>⏭️</button>
-              <button className="swipe-btn like" onClick={() => handleAction("like")}>❤️</button>
-              <button className="swipe-btn invite" onClick={() => handleAction("invite")}>💌</button>
-              <button className="swipe-btn premium" onClick={() => handleAction("premium")}>⭐</button>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-120px)] p-4">
+        <h2 className="text-xl font-bold mb-4">Profils féminins disponibles</h2>
+        <div className="flex items-center w-full max-w-md space-x-2 overflow-x-auto scroll-smooth snap-x snap-mandatory">
+          <button
+            className="text-2xl px-2"
+            onClick={() => setCarouselIndex((carouselIndex - 1 + profiles.length) % profiles.length)}
+          >
+            ⬅️
+          </button>
+
+          <div className="flex-shrink-0 w-80 h-[70vh] bg-white rounded-2xl shadow-lg p-4 flex flex-col items-center snap-center">
+            <img
+              src={profile.photoCompleteUrl || "https://via.placeholder.com/300"}
+              alt={profile.nom}
+              className="w-full h-2/3 object-cover rounded-xl mb-4"
+            />
+            <div className="text-center space-y-1">
+              <h3 className="text-lg font-semibold">{profile.nom}, {profile.age}</h3>
+              <p className="text-sm text-gray-600">{profile.ville}</p>
+              <p className="text-sm">Lifestyle: {profile.lifestyle}</p>
+              <p className="text-sm">Valeurs: {profile.valeurs.join(", ")}</p>
+              <p className="text-sm">Ambitions: {profile.ambitions.join(", ")}</p>
+            </div>
+
+            <div className="flex justify-around w-full mt-4 space-x-2">
+              <button className="w-14 h-14 rounded-full bg-gray-400 flex items-center justify-center text-xl hover:scale-110"
+                onClick={() => handleAction("pass", profile)}>⏭️</button>
+              <button className="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center text-xl hover:scale-110"
+                onClick={() => handleAction("like", profile)}>❤️</button>
+              <button className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center text-xl hover:scale-110"
+                onClick={() => handleAction("invite", profile)}>💌</button>
+              <button className="w-14 h-14 rounded-full bg-yellow-400 flex items-center justify-center text-xl hover:scale-110"
+                onClick={() => handleAction("premium", profile)}>⭐</button>
             </div>
           </div>
-          <button onClick={() => setCarouselIndex((carouselIndex + 1) % profiles.length)}>➡️</button>
+
+          <button
+            className="text-2xl px-2"
+            onClick={() => setCarouselIndex((carouselIndex + 1) % profiles.length)}
+          >
+            ➡️
+          </button>
         </div>
       </div>
     );
   }
 
-  // FEMME → Swipe tactile
+  // FEMME → Swipe
   const profile = profiles[currentIndex];
   return (
-    <div className="swipe-container">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-120px)] p-4">
       {currentIndex >= profiles.length ? (
-        <p>Plus de profils à swiper !</p>
+        <p className="text-center text-lg font-medium">Plus de profils à swiper !</p>
       ) : (
         <div
-          className="profile-card"
           ref={swipeRef}
+          className="w-11/12 max-w-md h-[70vh] bg-white rounded-2xl shadow-lg p-4 flex flex-col items-center"
           style={{ transform: `translateX(${dragOffset}px)`, transition: dragStart ? "none" : "transform 0.3s" }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <img src={profile.photoCompleteUrl || "https://via.placeholder.com/300"} alt={profile.nom} />
-          <h3>{profile.nom}, {profile.age}</h3>
-          <p>{profile.ville}</p>
-          <p>Lifestyle: {profile.lifestyle}</p>
-          <p>Valeurs: {profile.valeurs.join(", ")}</p>
-          <p>Ambitions: {profile.ambitions.join(", ")}</p>
+          <img
+            src={profile.photoCompleteUrl || "https://via.placeholder.com/300"}
+            alt={profile.nom}
+            className="w-full h-2/3 object-cover rounded-xl mb-4"
+          />
+          <h3 className="text-lg font-semibold">{profile.nom}, {profile.age}</h3>
+          <p className="text-sm text-gray-600">{profile.ville}</p>
+          <p className="text-sm">Lifestyle: {profile.lifestyle}</p>
+          <p className="text-sm">Valeurs: {profile.valeurs.join(", ")}</p>
+          <p className="text-sm">Ambitions: {profile.ambitions.join(", ")}</p>
 
-          <div className="swipe-buttons">
-            <button onClick={() => handleAction("wink", profile)}>👋 Clin d’œil</button>
-            <button onClick={() => handleAction("like", profile)}>❤️ Like</button>
-            <button onClick={() => handleAction("refuse", profile)}>❌ Refuser</button>
+          <div className="flex justify-around w-full mt-4 space-x-2">
+            <button
+              className="w-14 h-14 rounded-full bg-blue-400 flex items-center justify-center text-xl hover:scale-110"
+              onClick={() => handleAction("wink", profile)}>👋</button>
+            <button
+              className="w-14 h-14 rounded-full bg-red-500 flex items-center justify-center text-xl hover:scale-110"
+              onClick={() => handleAction("like", profile)}>❤️</button>
+            <button
+              className="w-14 h-14 rounded-full bg-gray-400 flex items-center justify-center text-xl hover:scale-110"
+              onClick={() => handleAction("refuse", profile)}>❌</button>
           </div>
         </div>
       )}
