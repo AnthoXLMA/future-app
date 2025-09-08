@@ -1,5 +1,8 @@
+// src/App.jsx
 import React, { useState, useEffect } from "react";
 import { getAuth, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "./firebase";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
 import Auth from "./components/Auth.jsx";
@@ -29,8 +32,20 @@ const App = () => {
 
   // --- Gestion de l'authentification ---
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(u => {
+    const unsubscribe = auth.onAuthStateChanged(async (u) => {
       setUser(u);
+      if (u) {
+        try {
+          const userDoc = await getDoc(doc(db, "Users", u.uid));
+          if (userDoc.exists()) {
+            setUserGender(userDoc.data().gender || null);
+          }
+        } catch (err) {
+          console.error("Erreur récupération genre:", err);
+        }
+      } else {
+        setUserGender(null);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
@@ -227,7 +242,7 @@ const App = () => {
                 onClick={() => navigate("/dashboard-femme")}
                 className="flex flex-col items-center text-purple-700 hover:text-purple-900"
               >
-                🏠<span className="text-xs">Castings</span>
+                🏠<span className="text-xs">Dashboard</span>
               </button>
 
               <button
