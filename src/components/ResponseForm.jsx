@@ -7,9 +7,11 @@ const ResponseForm = ({ challengeId }) => {
   const [answers, setAnswers] = useState([]);
   const [message, setMessage] = useState("");
 
+
   // Charger le challenge depuis Firestore
   useEffect(() => {
     const fetchChallenge = async () => {
+          if (!challengeId) return;
       try {
         const challengeRef = doc(db, "Challenges", challengeId);
         const snapshot = await getDoc(challengeRef);
