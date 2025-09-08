@@ -221,7 +221,12 @@ const App = () => {
               >
                 🎬<span className="text-xs">Casting</span>
               </button>
-
+              <button
+                onClick={() => navigate("/casting")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                🎬<span className="text-xs">Casting</span>
+              </button>
               <button
                 onClick={() => navigate("/challenge")}
                 className="flex flex-col items-center text-purple-700 hover:text-purple-900"
