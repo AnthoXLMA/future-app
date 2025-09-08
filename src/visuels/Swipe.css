@@ -1,0 +1,161 @@
+/* ==============================
+   SwipeProfiles.css - version moderne
+   ============================== */
+
+/* Container principal */
+.swipe-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  perspective: 1000px; /* pour effet 3D sur swipe */
+}
+
+/* ==============================
+   Carte profil
+   ============================== */
+.profile-card {
+  width: 320px;
+  height: 500px; /* carte plus grande */
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card img {
+  width: 100%;
+  height: 65%;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.profile-card img:hover {
+  transform: scale(1.05);
+}
+
+/* ==============================
+   Boutons swipe / actions
+   ============================== */
+.swipe-buttons {
+  display: flex;
+  justify-content: space-around;
+  width: 300px;
+  margin-top: 1.5rem;
+}
+
+/* Boutons génériques ronds */
+.swipe-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 1.8rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover / effet pop */
+.swipe-btn:hover {
+  transform: scale(1.15);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Couleurs par action */
+.swipe-btn.pass {
+  background-color: #aaa; /* gris pour passer */
+}
+
+.swipe-btn.like {
+  background: linear-gradient(135deg, #ff5a5f, #ff8a66); /* rouge like */
+}
+
+.swipe-btn.invite {
+  background-color: #4CAF50; /* vert pour invitation normale */
+}
+
+.swipe-btn.premium {
+  background-color: #fcb045; /* orange / doré pour invitation premium */
+}
+
+/* ==============================
+   Carousel pour les hommes
+   ============================== */
+.carousel-wrapper {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-card {
+  width: 270px;
+  margin: 0 1rem;
+  border-radius: 16px;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transform: scale(0.9);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.carousel-card.active {
+  transform: scale(1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.carousel-btn {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.carousel-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Carousel indicateurs */
+.carousel-indicators {
+  margin-top: 0.5rem;
+}
+
+.dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.dot.active {
+  background: #ff5a5f;
+  transform: scale(1.3);
+}
