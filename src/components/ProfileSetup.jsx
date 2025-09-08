@@ -17,6 +17,8 @@ const ProfileSetup = ({ isOpen, onClose, userGender }) => {
 
   const navigate = useNavigate();
 
+  if (!isOpen) return null;
+
   const validateForm = () => {
     let newErrors = {};
     if (!nom.trim()) newErrors.nom = "Le nom est obligatoire.";
@@ -61,7 +63,7 @@ const ProfileSetup = ({ isOpen, onClose, userGender }) => {
       );
 
       setMessage("Profil sauvegardé avec succès !");
-      onClose();
+      if (onClose) onClose();
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
@@ -69,82 +71,91 @@ const ProfileSetup = ({ isOpen, onClose, userGender }) => {
     }
   };
 
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">Complétez votre profil</h2>
-        {message && <p className="text-green-600 text-center font-medium">{message}</p>}
+    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg space-y-4">
+      <h2 className="text-2xl font-bold text-gray-800 text-center">Complétez votre profil</h2>
+      {message && <p className="text-green-600 text-center font-medium">{message}</p>}
 
-        <div className="space-y-3">
-          <input
-            type="text"
-            placeholder="Nom"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          {errors.nom && <p className="text-red-500 text-sm">{errors.nom}</p>}
+      <div className="space-y-3">
+        <input
+          type="text"
+          placeholder="Nom"
+          value={nom}
+          onChange={(e) => setNom(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        {errors.nom && <p className="text-red-500 text-sm">{errors.nom}</p>}
 
-          <input
-            type="number"
-            placeholder="Âge"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          {errors.age && <p className="text-red-500 text-sm">{errors.age}</p>}
+        <input
+          type="number"
+          placeholder="Âge"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        {errors.age && <p className="text-red-500 text-sm">{errors.age}</p>}
 
-          <input
-            type="text"
-            placeholder="Ville"
-            value={ville}
-            onChange={(e) => setVille(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          {errors.ville && <p className="text-red-500 text-sm">{errors.ville}</p>}
+        <input
+          type="text"
+          placeholder="Ville"
+          value={ville}
+          onChange={(e) => setVille(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        {errors.ville && <p className="text-red-500 text-sm">{errors.ville}</p>}
 
-          <input
-            type="text"
-            placeholder="Lifestyle"
-            value={lifestyle}
-            onChange={(e) => setLifestyle(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+        <input
+          type="text"
+          placeholder="Lifestyle"
+          value={lifestyle}
+          onChange={(e) => setLifestyle(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
 
-          <input
-            type="text"
-            placeholder="Valeurs (séparées par des virgules)"
-            value={valeurs}
-            onChange={(e) => setValeurs(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+        <input
+          type="text"
+          placeholder="Valeurs (séparées par des virgules)"
+          value={valeurs}
+          onChange={(e) => setValeurs(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
 
-          <input
-            type="text"
-            placeholder="Ambitions (séparées par des virgules)"
-            value={ambitions}
-            onChange={(e) => setAmbitions(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+        <input
+          type="text"
+          placeholder="Ambitions (séparées par des virgules)"
+          value={ambitions}
+          onChange={(e) => setAmbitions(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
 
-          <input
-            type="text"
-            placeholder="Préférences matrimoniales (séparées par des virgules)"
-            value={preferences}
-            onChange={(e) => setPreferences(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
-
-        <button
-          onClick={handleSaveProfile}
-          className="w-full py-3 mt-4 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Sauvegarder le profil
-        </button>
+        <input
+          type="text"
+          placeholder="Préférences matrimoniales (séparées par des virgules)"
+          value={preferences}
+          onChange={(e) => setPreferences(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
       </div>
+
+      <button
+        onClick={handleSaveProfile}
+        className="w-full py-3 mt-4 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition-colors"
+      >
+        Sauvegarder le profil
+      </button>
+
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="w-full mt-2 py-2 text-gray-600 hover:text-gray-900 text-sm underline"
+        >
+          Fermer
+        </button>
+      )}
+    </div>
     </Modal>
-  );
-};
+)};
 
 export default ProfileSetup;
