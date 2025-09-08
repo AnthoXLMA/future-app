@@ -28,7 +28,6 @@ const Auth = ({ onSignUp }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("Utilisateur connecté !");
-      // Ici pas besoin d'appeler onSignUp, App.jsx gère déjà onAuthStateChanged
     } catch (err) {
       setError(err.message);
     }

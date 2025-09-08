@@ -1,31 +1,26 @@
-// src/components/GenderModal.jsx
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
-import "../visuels/GenderModal.css";
+import Modal from "./Modal";
 
 const GenderModal = ({ isOpen, onClose, onSubmit }) => {
   const [selectedGender, setSelectedGender] = useState("");
-
-  if (!isOpen) return null;
 
   const handleSubmit = async () => {
     const user = auth.currentUser;
     if (!user || !selectedGender) return;
 
     try {
-      // 🔥 Crée un doc minimal si pas encore existant
       await setDoc(
-        doc(db, "Profiles", user.uid),
+        doc(db, "Users", user.uid),
         {
           userId: user.uid,
           email: user.email,
           gender: selectedGender,
           createdAt: new Date(),
         },
-        { merge: true } // ne pas écraser si déjà présent
+        { merge: true }
       );
-
       onSubmit(selectedGender);
       onClose();
     } catch (err) {
@@ -34,15 +29,45 @@ const GenderModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   return (
-    <div className="modal">
-      <h2>Vous êtes ?</h2>
-      <button onClick={() => setSelectedGender("homme")}>Un homme</button>
-      <button onClick={() => setSelectedGender("femme")}>Une femme</button>
-      <br />
-      <button onClick={handleSubmit} disabled={!selectedGender}>
-        Confirmer
-      </button>
-    </div>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div className="flex flex-col items-center p-6 space-y-6">
+        <h2 className="text-2xl font-bold text-gray-800">Quel est votre genre ?</h2>
+
+        <div className="flex gap-6">
+          <div
+            className={`flex flex-col items-center justify-center p-6 rounded-xl cursor-pointer transition-transform duration-200 ${
+              selectedGender === "homme" ? "bg-purple-700 text-white scale-105" : "bg-gray-100 text-gray-800 hover:scale-105"
+            }`}
+            onClick={() => setSelectedGender("homme")}
+          >
+            🧑
+            <span className="mt-2 font-semibold">Homme</span>
+          </div>
+
+          <div
+            className={`flex flex-col items-center justify-center p-6 rounded-xl cursor-pointer transition-transform duration-200 ${
+              selectedGender === "femme" ? "bg-pink-500 text-white scale-105" : "bg-gray-100 text-gray-800 hover:scale-105"
+            }`}
+            onClick={() => setSelectedGender("femme")}
+          >
+            👩
+            <span className="mt-2 font-semibold">Femme</span>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          disabled={!selectedGender}
+          className={`w-full py-3 rounded-lg font-semibold transition-colors ${
+            selectedGender
+              ? "bg-purple-600 text-white hover:bg-purple-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Confirmer
+        </button>
+      </div>
+    </Modal>
   );
 };
 

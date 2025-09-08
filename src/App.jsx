@@ -14,18 +14,20 @@ import GenderModal from "./components/GenderModal.jsx";
 import SwipeProfiles from "./components/SwipeProfiles.jsx";
 import Modal from "./components/Modal.jsx";
 import SettingsModal from "./components/SettingsModal.jsx";
+import CastingForm from "./components/CastingForm.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [challengeId, setChallengeId] = useState(null);
   const [profileFemmeId, setProfileFemmeId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userGender, setUserGender] = useState('gender');
+  const [userGender, setUserGender] = useState(null);
   const [openModal, setOpenModal] = useState(null);
 
   const auth = getAuth();
   const navigate = useNavigate();
 
+  // --- Gestion de l'authentification ---
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(u => {
       setUser(u);
@@ -34,9 +36,14 @@ const App = () => {
     return () => unsubscribe();
   }, [auth]);
 
+  // --- Redirection automatique vers le dashboard selon le genre ---
   useEffect(() => {
-    if (userGender === "homme") navigate("/dashboard");
-    else if (userGender === "femme") navigate("/dashboard-femme");
+    if (!userGender) return;
+    const currentPath = window.location.pathname;
+    if (currentPath === "/profile") {
+      if (userGender === "homme") navigate("/dashboard");
+      else if (userGender === "femme") navigate("/dashboard-femme");
+    }
   }, [userGender, navigate]);
 
   if (loading) return <p className="text-center mt-20 text-lg font-medium">Chargement...</p>;
@@ -126,6 +133,7 @@ const App = () => {
               />
               <Route path="/swipe" element={<SwipeProfiles currentUserGender={userGender} />} />
               <Route path="/invites" element={<InvitesList />} />
+              <Route path="/casting" element={<CastingForm />} />
               <Route path="*" element={<Navigate to="/profile" />} />
             </>
           )}
@@ -145,71 +153,100 @@ const App = () => {
         onSave={(updatedData) => console.log("Profil mis à jour :", updatedData)}
       />
 
-      {/* Gender Modal (optionnel) */}
+      {/* Gender Modal */}
       {openModal === "gender" && (
         <GenderModal
           isOpen
           onClose={() => setOpenModal(null)}
           onSubmit={(gender) => {
-            setUserGender(gender);
+            setUserGender(gender); // "homme" ou "femme"
             setOpenModal("profile");
           }}
         />
       )}
 
       {/* Bottom Navigation */}
-      {/* Bottom Navigation */}
-{user && (
-  <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-t p-2 flex justify-around items-center rounded-t-xl">
-    <button
-      onClick={() => navigate("/dashboard")}
-      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
-    >
-      🏠<span className="text-xs">Dashboard</span>
-    </button>
+      {user && (userGender === "homme" || userGender === "femme") && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-t p-2 flex justify-around items-center rounded-t-xl">
+          {/* Menu Homme */}
+          {userGender === "homme" && (
+            <>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                🏠<span className="text-xs">Dashboard</span>
+              </button>
 
-    <button
-      onClick={() => navigate("/challenge")}
-      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
-    >
-      ✏️<span className="text-xs">Challenge</span>
-    </button>
+              <button
+                onClick={() => navigate("/swipe")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                🔄<span className="text-xs">Swipe</span>
+              </button>
 
-    <button
-      onClick={() => {
-        if (user?.premium) navigate("/casting");
-        else alert("Création de casting réservée aux abonnés premium !");
-      }}
-      className={`flex flex-col items-center ${
-        user?.premium ? "text-purple-700 hover:text-purple-900" : "text-gray-400 cursor-not-allowed"
-      }`}
-    >
-      🎬<span className="text-xs">Casting</span>
-    </button>
+              <button
+                onClick={() => {
+                  if (user?.premium) navigate("/casting");
+                  else alert("Création de casting réservée aux abonnés premium !");
+                }}
+                className={`flex flex-col items-center ${
+                  user?.premium ? "text-purple-700 hover:text-purple-900" : "text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                🎬<span className="text-xs">Casting</span>
+              </button>
 
-    <button
-      onClick={() => navigate("/invite")}
-      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
-    >
-      💌<span className="text-xs">Inviter</span>
-    </button>
+              <button
+                onClick={() => navigate("/challenge")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                ✏️<span className="text-xs">Challenge</span>
+              </button>
 
-    <button
-      onClick={() => navigate("/response")}
-      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
-    >
-      📨<span className="text-xs">Réponses</span>
-    </button>
+              <button
+                onClick={() => navigate("/invite")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                💌<span className="text-xs">Inviter</span>
+              </button>
 
-    <button
-      onClick={() => navigate("/swipe")}
-      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
-    >
-      🔄<span className="text-xs">Swipe</span>
-    </button>
-  </nav>
-)}
+              <button
+                onClick={() => navigate("/response")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                📨<span className="text-xs">Résultats</span>
+              </button>
+            </>
+          )}
 
+          {/* Menu Femme */}
+          {userGender === "femme" && (
+            <>
+              <button
+                onClick={() => navigate("/dashboard-femme")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                🏠<span className="text-xs">Castings</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/swipe")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                🔄<span className="text-xs">Swipe</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/invites")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                💌<span className="text-xs">Invitations</span>
+              </button>
+            </>
+          )}
+        </nav>
+      )}
     </div>
   );
 };

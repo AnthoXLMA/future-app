@@ -1,39 +1,16 @@
 import React, { useState } from "react";
 import { auth, db } from "../firebase";
-import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const CastingForm = () => {
+  const navigate = useNavigate();
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
-  const [challenges, setChallenges] = useState([
-    { titre: "", description: "", cases: ["", "", ""] },
-  ]);
   const [dateLimite, setDateLimite] = useState("");
   const [nbMaxParticipants, setNbMaxParticipants] = useState(5);
-  const [recompense, setRecompense] = useState(""); // ✨ Nouveau champ récompense
+  const [recompense, setRecompense] = useState(""); // Champ optionnel
   const [message, setMessage] = useState("");
-
-  const handleChallengeChange = (index, field, value) => {
-    const newChallenges = [...challenges];
-    newChallenges[index][field] = value;
-    setChallenges(newChallenges);
-  };
-
-  const handleCaseChange = (challengeIndex, caseIndex, value) => {
-    const newChallenges = [...challenges];
-    newChallenges[challengeIndex].cases[caseIndex] = value;
-    setChallenges(newChallenges);
-  };
-
-  const addChallenge = () => {
-    setChallenges([...challenges, { titre: "", description: "", cases: ["", "", ""] }]);
-  };
-
-  const addCase = (challengeIndex) => {
-    const newChallenges = [...challenges];
-    newChallenges[challengeIndex].cases.push("");
-    setChallenges(newChallenges);
-  };
 
   const handleSaveCasting = async () => {
     const user = auth.currentUser;
@@ -42,8 +19,8 @@ const CastingForm = () => {
       return;
     }
 
-    if (!titre || !description || !dateLimite || challenges.length === 0) {
-      setMessage("Veuillez remplir tous les champs.");
+    if (!titre || !description || !dateLimite) {
+      setMessage("Veuillez remplir tous les champs obligatoires.");
       return;
     }
 
@@ -59,33 +36,20 @@ const CastingForm = () => {
         statut: "en_cours",
         dateCreation: Timestamp.now(),
         challenges: [],
-        recompense: recompense || null, // ✨ Ajouter récompense ici (null si vide)
+        recompense: recompense || null,
       });
 
-      // Ajouter les challenges au casting
-      const challengesRef = collection(db, "Challenges");
-      for (let challenge of challenges) {
-        const challengeDoc = await addDoc(challengesRef, {
-          castingId: castingDoc.id,
-          titre: challenge.titre,
-          description: challenge.description,
-          cases: challenge.cases,
-          dateCreation: Timestamp.now(),
-        });
-        // Ajouter l'ID du challenge dans le casting
-        await updateDoc(doc(db, "Castings", castingDoc.id), {
-          challenges: [...(castingDoc.challenges || []), challengeDoc.id],
-        });
-      }
-
       setMessage("Casting créé avec succès !");
-      // Reset
+      // Reset du formulaire
       setTitre("");
       setDescription("");
-      setChallenges([{ titre: "", description: "", cases: ["", "", ""] }]);
       setDateLimite("");
       setNbMaxParticipants(5);
-      setRecompense(""); // ✨ Reset récompense
+      setRecompense("");
+
+      // 🔹 Redirection vers ChallengeForm avec castingId
+      navigate("/challenge", { state: { castingId: castingDoc.id } });
+
     } catch (err) {
       console.error(err);
       setMessage("Erreur lors de la création du casting.");
@@ -123,7 +87,7 @@ const CastingForm = () => {
       </div>
 
       <div className="mb-4">
-        <label className="block font-semibold mb-1">Nombre maximum de participantes :</label>
+        <label className="block font-semibold mb-1">Nombre maximum de participants :</label>
         <input
           type="number"
           value={nbMaxParticipants}
@@ -132,7 +96,6 @@ const CastingForm = () => {
         />
       </div>
 
-      {/* ✨ Champ optionnel récompense */}
       <div className="mb-4">
         <label className="block font-semibold mb-1">Récompense (optionnel) :</label>
         <input
@@ -143,52 +106,6 @@ const CastingForm = () => {
           className="w-full p-2 border rounded"
         />
       </div>
-
-      <h3 className="text-xl font-semibold mb-2">Challenges :</h3>
-
-      {challenges.map((challenge, i) => (
-        <div key={i} className="mb-6 p-4 border rounded bg-gray-50">
-          <input
-            type="text"
-            placeholder={`Titre du challenge ${i + 1}`}
-            value={challenge.titre}
-            onChange={(e) => handleChallengeChange(i, "titre", e.target.value)}
-            className="w-full p-2 mb-2 border rounded"
-          />
-          <textarea
-            placeholder={`Description du challenge ${i + 1}`}
-            value={challenge.description}
-            onChange={(e) => handleChallengeChange(i, "description", e.target.value)}
-            className="w-full p-2 mb-2 border rounded"
-          />
-          <h4 className="font-semibold mb-1">Cases :</h4>
-          {challenge.cases.map((c, j) => (
-            <input
-              key={j}
-              type="text"
-              placeholder={`Case ${j + 1}`}
-              value={c}
-              onChange={(e) => handleCaseChange(i, j, e.target.value)}
-              className="w-full p-2 mb-2 border rounded"
-            />
-          ))}
-          <button
-            type="button"
-            onClick={() => addCase(i)}
-            className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Ajouter une case
-          </button>
-        </div>
-      ))}
-
-      <button
-        type="button"
-        onClick={addChallenge}
-        className="px-4 py-2 mb-4 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Ajouter un challenge
-      </button>
 
       <button
         type="button"
