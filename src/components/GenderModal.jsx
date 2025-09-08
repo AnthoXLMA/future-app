@@ -11,16 +11,12 @@ const GenderModal = ({ isOpen, onClose, onSubmit }) => {
     if (!user || !selectedGender) return;
 
     try {
-      await setDoc(
-        doc(db, "Users", user.uid),
-        {
-          userId: user.uid,
-          email: user.email,
-          gender: selectedGender,
-          createdAt: new Date(),
-        },
-        { merge: true }
-      );
+      await setDoc(doc(db, "Users", user.uid), {
+        userId: user.uid,
+        email: user.email,
+        gender: selectedGender,
+        createdAt: new Date(),
+      }, { merge: true });
       onSubmit(selectedGender);
       onClose();
     } catch (err) {
