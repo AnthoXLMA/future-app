@@ -158,25 +158,58 @@ const App = () => {
       )}
 
       {/* Bottom Navigation */}
-      {user && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-t p-2 flex justify-around items-center rounded-t-xl">
-          <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
-            🏠<span className="text-xs">Dashboard</span>
-          </button>
-          <button onClick={() => navigate("/challenge")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
-            ✏️<span className="text-xs">Challenge</span>
-          </button>
-          <button onClick={() => navigate("/invite")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
-            💌<span className="text-xs">Inviter</span>
-          </button>
-          <button onClick={() => navigate("/response")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
-            📨<span className="text-xs">Réponses</span>
-          </button>
-          <button onClick={() => navigate("/swipe")} className="flex flex-col items-center text-purple-700 hover:text-purple-900">
-            🔄<span className="text-xs">Swipe</span>
-          </button>
-        </nav>
-      )}
+      {/* Bottom Navigation */}
+{user && (
+  <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-t p-2 flex justify-around items-center rounded-t-xl">
+    <button
+      onClick={() => navigate("/dashboard")}
+      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+    >
+      🏠<span className="text-xs">Dashboard</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/challenge")}
+      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+    >
+      ✏️<span className="text-xs">Challenge</span>
+    </button>
+
+    <button
+      onClick={() => {
+        if (user?.premium) navigate("/casting");
+        else alert("Création de casting réservée aux abonnés premium !");
+      }}
+      className={`flex flex-col items-center ${
+        user?.premium ? "text-purple-700 hover:text-purple-900" : "text-gray-400 cursor-not-allowed"
+      }`}
+    >
+      🎬<span className="text-xs">Casting</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/invite")}
+      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+    >
+      💌<span className="text-xs">Inviter</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/response")}
+      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+    >
+      📨<span className="text-xs">Réponses</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/swipe")}
+      className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+    >
+      🔄<span className="text-xs">Swipe</span>
+    </button>
+  </nav>
+)}
+
     </div>
   );
 };
