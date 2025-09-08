@@ -12,7 +12,7 @@ const ChallengeForm = () => {
   const [success, setSuccess] = useState(false);
   const [useAssistant, setUseAssistant] = useState(false)
   const location = useLocation();
-  const castingId = location.state?.castingId; // null si création libre
+  const castingId = location.state?.castingId;
 
 
   // --- Fonctions auxiliaires ---
@@ -75,12 +75,12 @@ const ChallengeForm = () => {
     setTitre("");
     setDescription("");
     setCases(["", "", ""]);
-  } catch (err) {
-    console.error(err);
-    setMessage("Erreur lors de la création du challenge");
-    setSuccess(false);
-  }
-};
+      } catch (err) {
+        console.error(err);
+        setMessage("Erreur lors de la création du challenge");
+        setSuccess(false);
+      }
+    };
 
 
   // --- JSX unique return ---

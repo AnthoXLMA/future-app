@@ -18,6 +18,9 @@ import SwipeProfiles from "./components/SwipeProfiles.jsx";
 import Modal from "./components/Modal.jsx";
 import SettingsModal from "./components/SettingsModal.jsx";
 import CastingForm from "./components/CastingForm.jsx";
+import CastingsEnCours from "./components/Actus.jsx";
+import WinksList from "./components/WinksList";
+
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -150,6 +153,8 @@ const App = () => {
               <Route path="/invites" element={<InvitesList />} />
               <Route path="/casting" element={<CastingForm />} />
               <Route path="*" element={<Navigate to="/profile" />} />
+              <Route path="/castings-en-cours" element={<CastingsEnCours />} />
+              <Route path="/winks" element={<WinksList />} />
             </>
           )}
         </Routes>
@@ -261,7 +266,15 @@ const App = () => {
                 onClick={() => navigate("/invites")}
                 className="flex flex-col items-center text-purple-700 hover:text-purple-900"
               >
-                💌<span className="text-xs">Invitations</span>
+                💌<span className="text-xs">Mes Invitations</span>
+              </button>
+
+              {/* Nouveau bouton pour voir les castings */}
+              <button
+                onClick={() => navigate("/actus")}
+                className="flex flex-col items-center text-purple-700 hover:text-purple-900"
+              >
+                🎯<span className="text-xs">Actus</span>
               </button>
             </>
           )}
